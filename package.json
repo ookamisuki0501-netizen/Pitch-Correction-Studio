@@ -1,0 +1,1 @@
+{"name":"pitch-correction-studio","version":"0.1.0","type":"module","scripts":{"dev":"vite --host 0.0.0.0","build":"vite build","test":"node --test Tests/*.test.js"},"devDependencies":{"vite":"^6.1.0"}}

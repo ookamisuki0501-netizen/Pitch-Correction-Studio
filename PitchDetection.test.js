@@ -1,0 +1,1 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {noteName} from '../Utils/PitchUtils.js';test('MIDI note naming',()=>{assert.equal(noteName(60),'C4');assert.equal(noteName(69),'A4');});

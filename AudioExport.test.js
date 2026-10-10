@@ -1,0 +1,1 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {waveformPeaks} from '../Audio/AudioBufferManager.js';test('waveform peaks derive from actual samples',()=>{const samples=new Float32Array([-.5,.75,-1,.25]);const b={length:4,numberOfChannels:1,getChannelData:()=>samples};assert.deepEqual(Array.from(waveformPeaks(b,2)),[-.5,.75,-1,.25]);});

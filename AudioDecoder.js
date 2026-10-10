@@ -1,0 +1,1 @@
+export async function decodeAudio(context,arrayBuffer){try{return await context.decodeAudioData(arrayBuffer.slice(0));}catch(e){throw new Error('Audio decoding failed. This format may not be supported by Safari: '+e.message);}}
