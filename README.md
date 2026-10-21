@@ -1,6 +1,6 @@
 # Pitch Correction Studio
 
-Version **0.1.0 Alpha** — Phase 1 implementation. English UI, designed for iPad Safari and static hosting.
+Version **0.1.1 Alpha** — Phase 1 implementation. English UI, designed for iPad Safari and static hosting.
 
 ## Run
 
@@ -33,3 +33,26 @@ Phase 2: F0 analysis, voicing, note detection. Phase 3: note and curve editing. 
 ## License
 
 MIT. See LICENSE.
+
+## Cloudflare Pages deployment (important)
+
+Upload **all files and folders inside `Pitch-Correction-Studio/`** to the root of your GitHub repository. Do not upload only `index.html`, and do not place the entire `Pitch-Correction-Studio` directory one level below the repository root unless Cloudflare's **Root directory** is set to `Pitch-Correction-Studio`.
+
+In Cloudflare Pages > Settings > Builds & deployments, use:
+
+- Framework preset: `Vite` (or None)
+- Root directory: `/` if `package.json`, `main.js`, `UI/` are at repository root
+- Build command: `npm run build`
+- Build output directory: `dist`
+- Environment: Node.js 20+ recommended
+
+The source file `main.js` imports `UI/App.js`; case-sensitive names matter on Cloudflare Linux. The build must have the complete `UI/`, `Audio/`, and `Utils/` folders. If a build reports missing `UI/App.js`, check GitHub's file browser for that exact path and verify Cloudflare's Root directory setting. ZIP extraction alone does not publish files to GitHub.
+
+Run `npm run check` before deploying. This validates local source structure and automated unit tests. A full Vite build requires installing npm dependencies.
+
+## v0.1.1 changes
+
+- Added an explicit root `main.js` entrypoint and clearer HTML module reference.
+- Added source structure validation and a Cloudflare entry test.
+- Added Cloudflare deployment instructions and static security headers.
+- No new pitch correction features are claimed in this patch.
