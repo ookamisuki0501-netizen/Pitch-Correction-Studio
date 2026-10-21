@@ -1,3 +1,11 @@
+# v1.2.1 touch editor fix
+
+- Auto-center detected note range vertically.
+- Drag notes vertically to change pitch.
+- Drag empty space to pan horizontally and vertically.
+- Two-finger pinch to zoom both axes.
+- Existing Cloudflare wrangler config retained.
+
 # Pitch Correction Studio v1.2.0 Alpha — Note Editor
 
 Flat-file deployment: upload all root files together to GitHub. No folders are required.
