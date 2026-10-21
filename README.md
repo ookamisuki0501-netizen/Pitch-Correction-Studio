@@ -56,3 +56,7 @@ Run `npm run check` before deploying. This validates local source structure and 
 - Added source structure validation and a Cloudflare entry test.
 - Added Cloudflare deployment instructions and static security headers.
 - No new pitch correction features are claimed in this patch.
+
+
+## v0.1.2 deployment fix
+Cloudflare Pages must use the repository root containing `index.html`, `main.js`, and `UI/App.js`. Upload the **contents** of `Pitch-Correction-Studio/` to the repository root, not the enclosing directory. `npm run build` now checks missing files before Vite. If GitHub does not show `UI/App.js` at the repository root, the deployment cannot succeed. This is a Phase 1 build/package fix; pitch correction remains unimplemented.
