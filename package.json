@@ -1,15 +1,12 @@
 {
   "name": "pitch-correction-studio",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "vite build",
+    "dev": "node scripts/dev-server.js",
+    "build": "node scripts/build.js",
     "test": "node --test Tests/*.test.js",
-    "check": "node --test Tests/*.test.js && node scripts/verify-structure.js",
+    "check": "npm run test && npm run build",
     "verify": "node scripts/verify-structure.js"
-  },
-  "devDependencies": {
-    "vite": "^6.1.0"
   }
 }
