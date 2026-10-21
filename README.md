@@ -1,18 +1,20 @@
-# Pitch Correction Studio v0.2.2 Alpha
+# Pitch Correction Studio v1.0.0 — Clean-room rebuild
 
-## Fixes and root cause
-Previous releases repeatedly failed in Cloudflare because GitHub repository paths did not match the imported module paths or a referenced prebuild script was missing. This release has a **zero-dependency native ES-module build**. The build validates all statically imported local modules, plus worker URL modules, and copies the runnable app to `dist/`. This removes reliance on remote Vite installation; `vite.config.js` is retained as optional compatibility configuration but **Vite is not used for this build**.
+This project was created **from an empty directory**. It does not reuse prior source files. It is an experimental working audio editor, **not** a commercial-grade correction engine.
 
-## Commands
-`npm install` (no dependencies), `npm test`, `npm run build`, `npm run dev`.
+## Features
+- Browser-native WAV/MP3/M4A/AAC decoding where supported by Safari; FLAC is browser-dependent.
+- Actual waveform display, YIN fundamental-frequency tracking and visual pitch contour.
+- Experimental pitch-synchronous overlap-add pitch transposition (-12 to +12 semitones) in a dedicated Web Worker. This changes the actual audio samples and does not change playback rate. Stereo channels are processed separately.
+- Original/processed comparison, play/pause/stop/seek, 16-bit PCM WAV export of processed samples at original sample rate.
+- No server required; static deployment.
 
-Cloudflare Pages: Build command `npm run build`, output `dist`, repository root `/`. Upload the **contents** of this project's folder into the GitHub repository root. Verify `UI/App.js` and `Workers/AudioWorker.js` exist on GitHub with exactly this capitalization.
+## Build
+`npm install` (zero third-party dependencies), `npm test`, `npm run build`.
+Deploy the **contents** of this folder to repository root. Cloudflare Pages: build command `npm run build`, output directory `dist`, root `/`. GitHub Pages: upload the `dist/` contents to a Pages-enabled branch or configure a workflow.
 
-## Implemented
-Browser decoding of Safari-supported audio files, waveform, YIN F0 tracking, fixed semitone correction using windowed overlap-add resampling, before/after playback, 16-bit PCM WAV export, dedicated Web Worker for F0 analysis and rendering, sample count preserved, non-destructive original audio. Audio decoding is browser codec dependent; FLAC is not guaranteed.
+## Algorithms and limitations
+YIN uses cumulative mean normalized difference and threshold-based minimum selection; no neural model. The pitch shifter estimates a representative F0 with YIN, uses period-spaced synthesis windows and interpolated sample reads with overlap normalization. It is a simplified pitch-synchronous overlap-add approach, not full adaptive PSOLA. It does **not** preserve formants, and can cause phasing, metallic artifacts, transient smearing and discontinuities, especially on polyphonic sources. It does not offer per-note manual editing, automatic tuning, drift/vibrato editing, 24-bit WAV, project serialization, streaming for long recordings or live editing. Long files require substantial memory. Export uses the same rendered signal as preview. Orbitron is loaded from Google Fonts with a system fallback if offline.
 
-## Limitations / NOT implemented
-Not production-grade vocal correction; grain overlap-add may color the sound, smear transients, and alter formants. No note-specific correction, manual pitch curve editing, robust voiced/unvoiced classification, real-time preview, PSOLA, formant preservation, 24/32-bit WAV UI, undo/redo, project persistence, or AudioWorklet playback. Full decoded audio and copied worker buffers may exhaust iPad memory on long files. Safari actual-device playback and codec support remain unverified. A build passing does not imply perceptual quality.
-
-## Deployment
-Both `Pitch-Correction-Studio-v0.2.2.zip` (project folder) and `Pitch-Correction-Studio-v0.2.2-repository-root.zip` (repository contents) are supplied. Do not upload a nested project folder when root is `/`.
+## Verification
+`npm test` exercises YIN 440 Hz, silence, noise, +12 and -12 semitone audio output, duration preservation, and modified PCM export. This does not establish perceptual quality. Safari device testing is still required.

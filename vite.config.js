@@ -1,2 +1,2 @@
-import { defineConfig } from 'vite';
-export default defineConfig({base:'./',build:{target:'es2022'}});
+// Optional future Vite configuration. Current build uses dependency-free scripts/build.js.
+export default {base:'./'};

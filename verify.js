@@ -1,0 +1,1 @@
+import {existsSync} from 'node:fs';for(const path of ['index.html','main.js','Workers/Processor.js','Analysis/YIN.js','DSP/GranularShift.js','Audio/WavWriter.js']){if(!existsSync(path))throw Error('Missing: '+path)}console.log('Structure OK')
