@@ -3,3 +3,5 @@ import test from 'node:test';import assert from 'node:assert/strict';import {yin
 import {segmentNotes} from './notes.js';import {renderNotes} from './render.js';
 test('note segmentation finds voiced note',()=>{const frames=Array.from({length:20},(_,i)=>({time:.05+i*.035,hz:440,confidence:.95}));const ns=segmentNotes(frames,1);assert.equal(ns.length,1);assert.equal(ns[0].midi,69)});
 test('edited note changes samples while preserving length',()=>{const x=tone(440),notes=[{start:.1,end:1.9,midi:81,originalMidi:69,offset:0}];const y=renderNotes(x,notes,rate);assert.equal(y.length,x.length);assert.ok(Math.abs(detect(y)-880)<120);assert.ok(Math.abs(y[0]-x[0])<1e-7)});
+test('vibrato stays a single note',()=>{const frames=Array.from({length:40},(_,i)=>({time:.05+i*.035,hz:440*2**((.25*Math.sin(i*.7))/12),confidence:.95}));assert.equal(segmentNotes(frames,2).length,1)});
+test('silence remains unchanged when rendering empty notes',()=>{const x=new Float32Array(16000);assert.deepEqual(renderNotes(x,[],16000),x)});

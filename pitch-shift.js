@@ -1,3 +1,20 @@
-import {yin} from './yin.js';
-// Experimental pitch-synchronous overlap-add; duration stays unchanged.
-export function pitchShift(input,semitones,sampleRate){if(!Number.isFinite(semitones)||Math.abs(semitones)>12)throw Error('Transpose must be within ±12');const n=input.length,ratio=2**(semitones/12);if(ratio===1)return input.slice();const out=new Float32Array(n),weight=new Float32Array(n);const frame=Math.min(n,Math.round(sampleRate*.09));if(frame<1024)return input.slice();const hop=Math.max(128,Math.round(sampleRate*.045));for(let base=0;base<n;base+=hop){const start=Math.min(Math.max(0,base),Math.max(0,n-frame));const segment=input.subarray(start,start+frame);const f=yin(segment,sampleRate);if(!f){for(let i=base;i<Math.min(n,base+hop);i++){out[i]+=input[i];weight[i]+=1}continue}const period=sampleRate/f.hz,target=period/ratio;const radius=Math.max(8,Math.ceil(Math.max(period,target)*1.6));const end=Math.min(n,base+hop);for(let center=base-radius;center<end+radius;center+=target){const sourceCenter=Math.round((center-base)/period)*period+base;for(let i=Math.max(base,Math.ceil(center-radius));i<end&&i<center+radius;i++){const src=sourceCenter+(i-center)*ratio,j=Math.floor(src);if(j<0||j+1>=n)continue;const d=(i-center)/radius,win=.5+.5*Math.cos(Math.PI*d);out[i]+=(input[j]*(1-(src-j))+input[j+1]*(src-j))*win;weight[i]+=win}}for(let i=base;i<end;i++){if(weight[i]<1e-5){out[i]=input[i];weight[i]=1}}}for(let i=0;i<n;i++){out[i]=weight[i]?out[i]/weight[i]:input[i];if(!Number.isFinite(out[i]))out[i]=0}return out}
+// Overlap-add pitch shifter: time is preserved; individual grains are resampled.
+// This is experimental DSP, not a formant-preserving commercial vocal engine.
+export function pitchShift(input,semitones,sampleRate){
+ if(!Number.isFinite(semitones)||Math.abs(semitones)>12)throw Error('Transpose must be within ±12 semitones');
+ const n=input.length,ratio=2**(semitones/12);if(Math.abs(semitones)<.001)return input.slice();
+ const out=new Float32Array(n),weights=new Float32Array(n);
+ const grain=Math.min(n,Math.max(256,Math.round(sampleRate*.060))),hop=Math.max(64,Math.round(grain/6)),half=Math.floor(grain/2);
+ if(grain<256)return input.slice();
+ for(let center=0;center<n+half;center+=hop){
+  for(let j=0;j<grain;j++){
+   const dst=center+j-half;if(dst<0||dst>=n)continue;
+   const src=center+(j-half)*ratio;const k=Math.floor(src);if(k<0||k+1>=n)continue;
+   const phase=(j+.5)/grain,w=.5-.5*Math.cos(2*Math.PI*phase);
+   const v=input[k]+(input[k+1]-input[k])*(src-k);
+   out[dst]+=v*w;weights[dst]+=w;
+  }
+ }
+ for(let i=0;i<n;i++)out[i]=weights[i]>1e-6?out[i]/weights[i]:input[i];
+ return out;
+}

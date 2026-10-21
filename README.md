@@ -1,35 +1,20 @@
-# v1.2.1 touch editor fix
+# Pitch Correction Studio v1.3.0 — Experimental note editor
 
-- Auto-center detected note range vertically.
-- Drag notes vertically to change pitch.
-- Drag empty space to pan horizontally and vertically.
-- Two-finger pinch to zoom both axes.
-- Existing Cloudflare wrangler config retained.
+Client-side iPad Safari-compatible static site. All files stay at repository root for manual GitHub upload.
 
-# Pitch Correction Studio v1.2.0 Alpha — Note Editor
+## Improvements since v1.2.1
+- Visible red playhead synchronized to audio playback in piano roll and waveform; time readout and seek via ruler, waveform, or seek slider.
+- Notes use the piano-key pitch grid and a continuous detected pitch contour.
+- Drag note vertically to change pitch; drag empty area to pan; two fingers to zoom; auto-center pitch range.
+- Improved note segmentation: 5-frame median filter, confidence gating, short gap filling, short interruption merging.
+- Replaced broken previous pitch shift with windowed granular overlap-add resampling. Edited notes are actually rendered into new WAV samples.
+- Canvas DPI-aware resize and viewport-fitting layout.
 
-Flat-file deployment: upload all root files together to GitHub. No folders are required.
+## Deployment
+Cloudflare Workers: Build command `npm run build`, deploy command `npx wrangler deploy`. `wrangler.jsonc` points to `dist` assets. Or Cloudflare Pages output `dist`.
 
-## Working features
-- Decode audio supported by Safari; waveform preview
-- YIN monophonic pitch tracking and note segmentation
-- Touch-select and vertically drag note blocks in piano roll; cents slider
-- Render note-by-note pitch changes into actual audio using experimental overlap-add pitch shifter
-- Before/After playback, 16-bit WAV export, Web Worker rendering
-- Non-destructive source buffer; audio duration preserved
+## Local verification
+`npm test` and `npm run build`.
 
-## Limits
-- Alpha-quality pitch shifting; **not** equivalent to Melodyne/NewTone. No formant preservation, phase locking, sophisticated transient/sibilant protection, or per-point curve editing.
-- Note boundaries and voiced classification can be wrong, especially with noisy or polyphonic audio.
-- Touch two-finger pan/pinch not implemented; zoom and scroll sliders provided instead.
-- Renders after editing, not instant live processing. Large files may exceed iPad memory.
-- Original audio is not bundled in a project file; project save not implemented.
-
-## Commands
-`npm install` then `npm test` then `npm run build`. Output `dist/`.
-
-## Cloudflare Workers
-Build: `npm run build`; Deploy: `npx wrangler deploy`; `wrangler.jsonc` configures `assets.directory=./dist`.
-
-## Algorithm
-YIN difference-function with cumulative mean normalization, confidence gating. Segment contiguous stable F0 frames into notes. Pitch changes are applied to voiced note regions with 18ms crossfades to original; short overlapping window synthesis (experimental), no speed-based transposition.
+## Important limitations
+This is **not** equivalent to Melodyne, NewTone, Auto-Tune or other commercial pitch correction tools. The granular shifter is experimental, does **not** preserve formants, and can cause phasing or metallic artifacts on real singing. YIN note detection works best on dry monophonic vocals and may fail on breathy voice, harmonies, instruments, or noisy recordings. The program does not yet have a robust multi-resolution F0 tracker, spectral envelope/formant correction, transient/voiceless preservation, or high-quality time-domain pitch-synchronous processing. Tests are synthetic and do not establish perceived vocal quality. iPad Safari device testing has not been performed.

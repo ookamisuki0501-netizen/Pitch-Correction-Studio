@@ -1,3 +1,15 @@
 import {pitchShift} from './pitch-shift.js';
-// Non-destructive per-note render: process voiced note interiors; blend edges to source.
-export function renderNotes(input,notes,rate){const out=input.slice();for(const note of notes){const semitones=(note.midi-note.originalMidi)+(note.offset||0);if(Math.abs(semitones)<.005)continue;const a=Math.max(0,Math.floor(note.start*rate)),b=Math.min(input.length,Math.ceil(note.end*rate));if(b-a<1024)continue;const pad=Math.min(Math.floor(rate*.045),Math.floor((b-a)/4));const left=Math.max(0,a-pad),right=Math.min(input.length,b+pad);const shifted=pitchShift(input.subarray(left,right),Math.max(-12,Math.min(12,semitones)),rate);const fade=Math.max(1,Math.min(Math.floor(rate*.018),Math.floor((b-a)/3)));for(let i=a;i<b;i++){const blend=Math.min(1,(i-a)/fade,(b-1-i)/fade);const t=Math.max(0,blend);out[i]=input[i]*(1-t)+shifted[i-left]*t}}return out}
+export function renderNotes(input,notes,rate){
+ const out=input.slice();
+ for(const note of notes){
+  const semitones=(note.midi-note.originalMidi)+(note.offset||0);
+  if(Math.abs(semitones)<.01)continue;
+  const a=Math.max(0,Math.floor(note.start*rate)),b=Math.min(input.length,Math.ceil(note.end*rate));if(b-a<rate*.055)continue;
+  const pad=Math.min(Math.floor(rate*.08),Math.floor((b-a)/3));
+  const left=Math.max(0,a-pad),right=Math.min(input.length,b+pad);
+  const shifted=pitchShift(input.subarray(left,right),Math.max(-12,Math.min(12,semitones)),rate);
+  const fade=Math.max(1,Math.min(Math.floor(rate*.025),Math.floor((b-a)/3)));
+  for(let i=a;i<b;i++){const t=Math.min(1,(i-a)/fade,(b-1-i)/fade);out[i]=input[i]*(1-t)+shifted[i-left]*t}
+ }
+ return out;
+}
