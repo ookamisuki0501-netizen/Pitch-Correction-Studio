@@ -1,7 +1,1 @@
-{
-  "name": "pitch-correction-studio",
-  "compatibility_date": "2026-10-21",
-  "assets": {
-    "directory": "./dist"
-  }
-}
+{"name":"pitch-correction-studio","compatibility_date":"2026-10-21","assets":{"directory":"./dist"}}

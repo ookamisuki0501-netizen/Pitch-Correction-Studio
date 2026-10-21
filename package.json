@@ -1,8 +1,8 @@
 {
   "name": "pitch-correction-studio",
-  "version": "1.1.1",
-  "type": "module",
+  "version": "1.2.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "node build.js",
     "test": "node --test audio.test.js"

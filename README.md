@@ -1,27 +1,27 @@
-# Pitch Correction Studio v1.1.0 (Flat Upload Edition)
+# Pitch Correction Studio v1.2.0 Alpha — Note Editor
 
-**All project files are intentionally in one directory.** Extract the ZIP and upload the *individual files* into the GitHub repository root. Do not upload the enclosing folder. No `scripts/`, `UI/` or other nested directories are required. JavaScript modules remain separate files.
+Flat-file deployment: upload all root files together to GitHub. No folders are required.
 
-## Cloudflare Pages
-- Framework: None
-- Build command: `npm run build`
-- Output directory: `dist`
-- Root directory: `/`
+## Working features
+- Decode audio supported by Safari; waveform preview
+- YIN monophonic pitch tracking and note segmentation
+- Touch-select and vertically drag note blocks in piano roll; cents slider
+- Render note-by-note pitch changes into actual audio using experimental overlap-add pitch shifter
+- Before/After playback, 16-bit WAV export, Web Worker rendering
+- Non-destructive source buffer; audio duration preserved
 
-`npm install` requires no third-party packages. `npm run build` validates imports and copies all runtime assets into `dist/`. `npm test` executes DSP tests. GitHub Pages can serve these files directly without a build.
+## Limits
+- Alpha-quality pitch shifting; **not** equivalent to Melodyne/NewTone. No formant preservation, phase locking, sophisticated transient/sibilant protection, or per-point curve editing.
+- Note boundaries and voiced classification can be wrong, especially with noisy or polyphonic audio.
+- Touch two-finger pan/pinch not implemented; zoom and scroll sliders provided instead.
+- Renders after editing, not instant live processing. Large files may exceed iPad memory.
+- Original audio is not bundled in a project file; project save not implemented.
 
-## Implemented
-- Decode browser-supported audio using Web Audio API (WAV/MP3/M4A/AAC, FLAC if supported by Safari)
-- Waveform canvas, YIN pitch tracking, visible F0 curve, transpose ±12 semitones
-- Worker-based experimental pitch-synchronous overlap-add audio transformation
-- Original and processed playback, seeking, stop, 16-bit PCM WAV export with original sample rate and channel count
+## Commands
+`npm install` then `npm test` then `npm run build`. Output `dist/`.
 
-## Limitations
-- Pitch shifter is experimental and not production-grade PSOLA: artifacts can occur on vocals, transitions, breath, and polyphonic signals. Formant preservation is not implemented. Non-voiced regions are passed through. No note editing, automatic scale tuning, 24-bit export, undo/redo or project saving yet.
-- For very long recordings, decoding and export require considerable memory; each channel is processed separately in a worker.
-- No iPad Safari hardware verification has been performed.
-- This is an independent implementation, no proprietary audio libraries.
+## Cloudflare Workers
+Build: `npm run build`; Deploy: `npx wrangler deploy`; `wrangler.jsonc` configures `assets.directory=./dist`.
 
-## Cloudflare Workers deployment (v1.1.1)
-
-Upload **all files**, including `wrangler.jsonc`, to the GitHub repository root. Build command: `npm run build`; deploy command: `npx wrangler deploy`. `wrangler.jsonc` explicitly configures the `dist` static assets directory and prevents Wrangler from guessing Hydrogen. No framework is required. The deploy still requires valid Cloudflare account/project permissions. Do not upload `dist` manually.
+## Algorithm
+YIN difference-function with cumulative mean normalization, confidence gating. Segment contiguous stable F0 frames into notes. Pitch changes are applied to voiced note regions with 18ms crossfades to original; short overlapping window synthesis (experimental), no speed-based transposition.
