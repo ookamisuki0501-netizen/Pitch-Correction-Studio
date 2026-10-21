@@ -21,3 +21,7 @@
 - For very long recordings, decoding and export require considerable memory; each channel is processed separately in a worker.
 - No iPad Safari hardware verification has been performed.
 - This is an independent implementation, no proprietary audio libraries.
+
+## Cloudflare Workers deployment (v1.1.1)
+
+Upload **all files**, including `wrangler.jsonc`, to the GitHub repository root. Build command: `npm run build`; deploy command: `npx wrangler deploy`. `wrangler.jsonc` explicitly configures the `dist` static assets directory and prevents Wrangler from guessing Hydrogen. No framework is required. The deploy still requires valid Cloudflare account/project permissions. Do not upload `dist` manually.
